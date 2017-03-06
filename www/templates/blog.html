@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block beforehead %}
+<style>
+    .comment-avatar {width: 50px;height: 50px}
+</style>
+<script>
+    $(function () {
+        var vm = new Vue({
+            delimiters:['${', '}'],
+            el:'#comment',
+            data:{
+                comments:[],
+                newcomment:'',
+                action:'/api/{{blog.id}}/comment'
+            },
+            mounted: function () {
+                this.$http.get(this.action).then(function (response) {
+                    vm.comments = JSON.parse(response.body);
+                })
+            },
+            methods:{
+                postcomment: function () {
+                    Vue.http.options.emulateJSON = true;
+                    this.$http.post(this.action, {'newcomment':this.newcomment}).then(function (response) {
+                        vm.comments.push(JSON.parse(response.body));
+                        vm.newcomment = ''
+                    },function (response) {
+                        alert(response)
+                    })
+
+                }
+            }
+        });
+        window.vm = vm;
+    })
+</script>
+{% endblock %}
+{% block content %}
+<div class="uk-width-2-3">
+    <article class="uk-article">
+        <h3 class="uk-article-title">{{blog.name}}</h3>
+        <p class="uk-article-meta">发表时间：{{blog.created_at|totime}}</p>
+        <p>{{blog.content|tomarkdown|safe}}</p>
+    </article>
+</div>
+<div class="uk-width-2-3">
+    <hr class="uk-article-divider">
+   <div id="comment">
+    <div id="commentlist">
+        <div v-if="comments" v-for="comment in comments" >
+            <article  class="uk-comment">
+            <header class="uk-comment-header">
+                <img class="uk-comment-avatar comment-avatar" :src="comment.user_image?'/static/avatar/'+comment.user_image+'.jpg':'/static/avatar/default.png'"  alt="">
+                <h4 class="uk-comment-title">${comment.user_name}</h4>
+                <div class="uk-comment-meta">发表于：${comment.created_at}</div>
+            </header>
+            <div class="uk-comment-body">${comment.content}</div>
+            </article>
+            <hr class="uk-article-divider">
+        </div>
+        <div v-else>还没有评论、</div>
+
+    </div>
+       <hr class="uk-article-divider">
+    {% if ctx.request.user %}
+    <div id="newcomment">
+        <form @submit.prevent="postcomment">
+            评论：<textarea v-model="newcomment" type=""></textarea>
+            <input  type="submit" value="提交">
+        </form>
+    </div>
+    {% else %}
+    <a class="uk-button-primary" href="/login">登陆后发表评论</a>
+    {% endif %}
+</div>
+</div>
+
+
+{% endblock %}

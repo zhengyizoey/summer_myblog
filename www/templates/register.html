@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block beforehead %}
+<script>
+   function check_form(){
+       $('#password').val(CryptoJS.MD5($('#password1').val()).toString());
+       return true;
+   }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="uk-width-2-3">
+    <form id="form-register" class="uk-form" method="post" action="/api/users" onsubmit="return check_form()"
+    enctype="multipart/form-data">
+        <div class="uk-form-row">
+            <label class="uk-form-label">用户名</label>
+            <input name='name' type="text" placeholder="username">
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label">邮箱</label>
+            <input name="email" type="text" placeholder="email">
+        </div>
+        <div class="uk-form-label">
+            <label class="uk-form-label">密码</label>
+            <input id="password1" name="password1" type="password" placeholder="输入密码">
+            <input id="password" name="password" type="hidden">
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label">确认密码</label>
+            <input id="password2" name="password2" type="password" >
+        </div>
+        <div class="uk-form-file">
+            <label class="uk-form-label">上传头像</label>
+            <input type="file" name="avatar">
+        </div>
+        <div class="uk-form-row">
+            <button type='submit' class="uk-button">
+                <i class="uk-icon-user"></i>注册
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

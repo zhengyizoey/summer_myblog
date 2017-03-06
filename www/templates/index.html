@@ -1,0 +1,102 @@
+
+{% extends 'base.html' %}
+{% block beforehead %}
+    <style>
+    .uk-pagination {margin-top: 30px}
+    .aboutme {position: relative;
+            left: 110px;
+            width: 170px;
+            }
+    .aboutme > img {width: 162px;
+            height: 120px;
+            border-radius: 5px;
+            opacity: 0.9;}
+    .aboutme > p {height: 200%;
+            left: 15px;}
+    </style>
+    <script>
+    $(function () {
+        var vm = new Vue({
+            delimiters: ['${', '}'],
+            el:'#vm',
+            data:{
+               // b:[],
+                blogs:[],
+                pagenums:1,
+                currentpage:1,
+                hasprevious:false,
+                hasnext:false
+            },
+            computed:{
+                pagelist:function () {
+                    var arr = [];
+                    for(var i = 1;i<=this.pagenums;i++){
+                        arr.push(i)
+                    }
+                    return arr
+                }
+            },
+            mounted:function () {
+                this.getblog()
+            },
+            methods:{
+                getblog:function (page) {
+                    //官方传递事件：@click="getblog"  getblog:function(event){alert(event.target.tagname)}原声DOM事件
+                    var _page = page||1;
+                    var that = this;
+                    $.get('/api/getblog', {'page':_page}, function (data) {
+                        //that.$data = JSON.parse(data); 额，这样也不行，不知为啥，非要一个一个弄。。。
+                        that.$data.currentpage = _page;
+                        vm.$data.blogs = JSON.parse(data).blogs;
+                        that.$data.pagenums = JSON.parse(data).pagenums;
+                        that.$data.hasprevious = JSON.parse(data).hasprevious;
+                        that.$data.hasnext = JSON.parse(data).hasnext;
+                        //that.$data.b = JSON.parse(data);  //如果：TypeError: this.$data is undefined,vm.b = []
+//                        that.$set(that.b,data); 这个事不行的
+//                        vm.$data = data.data
+                    });
+//                    this.$http.get('/api/getblog?page='+ page).then(function (response) {
+//
+//                        this.$data = response.body
+//                    },function (response) {
+//                        alert(response)
+//                    })
+                }
+        }
+        });
+        window.vm = vm;
+    })
+</script>
+{% endblock %}
+{% block content %}
+<div id="vm">
+    <div class="uk-grid">
+    <div  class="uk-width-3-4">
+        <article  v-for="blog in blogs" class="uk-article">
+            <h3 class="uk-article-title"><a :href="'/blog/'+blog.id" >${blog.name}</a></h3>
+            <p class="uk-article-meta" >${blog.created_at}</p>
+            <p >${blog.summary}</p>
+            <p><a :href="'/blog/'+ blog.id" >继续阅读</a> </p>
+        </article>
+        <hr class="uk-article-divider">
+    </div>
+    <div class="uk-width-1-4">
+        <div class="aboutme">
+            <img src="/static/avatar/huanhai.jpg">
+            <p>作者：蜘猪</p>
+            <p>联系我：<a href=""><i class="uk-icon-github"></i></a> </p>
+        </div>
+    </div>
+</div>
+    <div class="uk-width-3-4">
+        <div class="uk-pagination">`
+            <li class="uk-pagination-previous" ><a href="">上一页</a></li>
+            <li v-for="page in pagelist" :class="page===currentpage?'uk-active':''">
+                <span v-if="page===currentpage">${page}</span>
+                <a v-else @click="getblog(page)" >${page}</a>
+            </li>
+            <li class="uk-pagination-next"><a @click="getblog(currentpage+1)">下一页</a></li>
+        </div>
+    </div>
+</div>
+{% endblock %}

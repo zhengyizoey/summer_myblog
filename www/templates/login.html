@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<form class="uk-form" action="/login" method="post">
+    {% if error %}
+        <p>{{error}}</p>
+    {% endif %}
+    <div class="uk-form-row">
+        <label class="uk-form-label">用户名或邮箱：</label>
+        <input name="name" type="text">
+    </div>
+    <div class="uk-form-row">
+        <label class="uk-form-label">密码：</label>
+        <input name="password" type="password">
+    </div>
+    <div class="uk-form-row">
+        <button class="uk-button"><i class="uk-icon-bookmark"></i> 登陆</button>
+    </div>
+</form>
+{% endblock %}

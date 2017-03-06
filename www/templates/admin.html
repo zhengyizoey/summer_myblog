@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block beforehead %}
+    <style>
+        div {margin-top: 10px}
+        div > button {float:right}
+    </style>
+    <script>
+        $(function () {
+            var vm = new Vue({
+                el:'#vm',
+                delimiters:['${','}'],
+                data:{
+                    blogs:[],
+                    currentpage:1,
+                    pagenums:1
+                },
+                computed:{
+                    pagelist:function () {
+                    var arr = [];
+                    for(var i = 1;i<=this.pagenums;i++){
+                        arr.push(i)
+                    }
+                    return arr
+                }
+                },
+                mounted:function () {
+                    this.getblog();
+                },
+                methods:{
+                    deleteblog:function (blogid) {
+                        $.post('/api/admin/deleteblog', {'blogid': blogid}, function (response) {
+                            // TODO：不重新请求，修改blogs
+                            vm.getblog();
+                            //var item = JSON.parse(response);
+                            //var index = vm.blogs.indexOf(item);
+                            //if(index >= 0){
+                            //    vm.blogs.splice(index, 1);
+                            //}
+                        })
+                    },
+                    updateblog:function (blogid) {
+                        $.get('/create_blog',{'blogid':blogid},function (response) {
+                            window.document.write(response)
+                        })
+                    },
+                    getblog:function (page) {
+                        var page_ = page||1;
+                        $.get('/api/getblog', {'page': page_, 'count':3}, function (response) {
+                            vm.$data.blogs =JSON.parse(response).blogs;
+                            vm.$data.pagenums = JSON.parse(response).pagenums;
+                            vm.$data.currentpage = page_||1
+                        });
+                        //Vue.http.options.emulateJSON = true;
+//                        this.$http.get('/api/getblog', {'page': page_, 'count':3}).then(function (response) {
+//                            alert(response.body);
+//                            alert(JSON.parse(response));
+//                            vm.$data.blogs =JSON.parse(response).blogs;
+//                            vm.$data.pagenums = JSON.parse(response).pagenums;
+//                            vm.$data.currentpage = page||1
+//                        })
+                    }
+                }
+            });
+            window.vm = vm;
+        })
+    </script>
+{% endblock %}
+{% block content %}
+    <div id="vm" class="uk-width-4-5 uk-container-center">
+
+        <div >
+            <ul class="uk-tab" data-uk-tab>
+            <li class="uk-active"><a href="">所有文章</a></li>
+            <li><a href="/admin/users" onclick="window.location.href='/admin/users'">用户</a></li>
+            </ul>
+        </div>
+        <div>
+            <button class="uk-button-primary" onclick="window.location.href='/create_blog'">
+                <span class="uk-plus-circle"></span>新建文章
+            </button>
+        </div>
+        <div>
+            <table class="uk-table uk-width-9-10 uk-container-center ">
+                <thead>
+                <tr>
+                    <th class="uk-width-1-10">序号</th>
+                    <th class="uk-width-5-10">标题</th>
+                    <th class="uk-width-2-10">创建时间</th>
+                    <th class="uk-width-2-10">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="blog in blogs">
+                    <td class="uk-width-1-10">1</td>
+                    <td class="uk-width-5-10">
+                        <a :href="'/blog/'+blog.id" >${blog.name}</a>
+                    </td>
+                    <td class="uk-width-2-10">${blog.created_at}</td>
+                    <td class="uk-width-2-10">
+                        <a @click="deleteblog(blog.id)">删除</a>
+                        <a :href="'/create_blog?blogid='+blog.id">修改</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="uk-container-center">
+            <ul class="uk-pagination">
+            <li v-for="page in pagelist" :class="page===currentpage?'uk-active':''">
+                <span v-if="page===currentpage">${page}</span>
+                <a v-else @click="getblog(page)">${page}</a>
+            </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
