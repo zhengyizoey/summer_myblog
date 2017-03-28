@@ -28,7 +28,8 @@ $(function () {
                 //$http默认以request payload上传，改成headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 Vue.http.options.emulateJSON = true;
                 this.$http.post('/api/create_blog', vm.$data).then(function (response) {
-                    return location.assign('/');
+                    alert('ok');
+                   // return location.assign('/');
                 },function (response) {
                     alert(response);
                 })

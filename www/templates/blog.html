@@ -2,6 +2,7 @@
 {% block beforehead %}
 <style>
     .comment-avatar {width: 50px;height: 50px}
+    .uk-width-2-3 > h3 {margin-top: 80px;}
 </style>
 <script>
     $(function () {
@@ -9,6 +10,7 @@
             delimiters:['${', '}'],
             el:'#comment',
             data:{
+                arr:[],
                 comments:[],
                 newcomment:'',
                 action:'/api/{{blog.id}}/comment'
@@ -44,11 +46,12 @@
     </article>
 </div>
 <div class="uk-width-2-3">
-    <hr class="uk-article-divider">
+    <h3>评论</h3>
+    <hr>
    <div id="comment">
     <div id="commentlist">
-        <div v-if="comments" v-for="comment in comments" >
-            <article  class="uk-comment">
+        <div v-if="comments.length"  >
+            <article v-for="comment in comments" class="uk-comment">
             <header class="uk-comment-header">
                 <img class="uk-comment-avatar comment-avatar" :src="comment.user_image?'/static/avatar/'+comment.user_image+'.jpg':'/static/avatar/default.png'"  alt="">
                 <h4 class="uk-comment-title">${comment.user_name}</h4>
@@ -58,10 +61,13 @@
             </article>
             <hr class="uk-article-divider">
         </div>
-        <div v-else>还没有评论、</div>
+        <div v-else>
+            <p>还没有评论、</p>
+        </div>
 
     </div>
-       <hr class="uk-article-divider">
+       <h3>发表评论</h3>
+       <hr>
     {% if ctx.request.user %}
     <div id="newcomment">
         <form @submit.prevent="postcomment">

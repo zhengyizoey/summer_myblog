@@ -36,7 +36,7 @@ def f2time(f):
     if d < 60*60*30:
         return u'%s天前'%(d/3600)
     dt = datetime.datetime.fromtimestamp(f)
-    return u'发表于%s年%s月%s日'%(dt.year, dt.month, dt.day)
+    return u'%s年%s月%s日'%(dt.year, dt.month, dt.day)
 
 
 def translate_time(objectlist):
@@ -220,17 +220,19 @@ def login():
     name = i.name.strip()
     password = i.password
     if not name:
-        return {'error': 'not name'}
+        return {'error': u'请填写邮箱或用户名'}
     if _RE_EMAIL.match(name):
         user = select_one('select * from users where email=?', name)
     else:
         user = select_one('select * from users where name=?', name)
-    if hashlib.md5(password).hexdigest() != user.password:
-        return {'error': 'wrong password'}
-    max_age = 3600 * 7 * 24
-    cookie = make_signed_cookie(user.id, user.password, max_age)
-    ctx.response.set_cookie(_COOKIE_NAME, cookie.encode('utf-8'), max_age=max_age)
-    raise HttpError.seeother('/')
+    if user:
+        if hashlib.md5(password).hexdigest() != user.password:
+            return {'error': u'密码错误'}
+        max_age = 3600 * 7 * 24
+        cookie = make_signed_cookie(user.id, user.password, max_age)
+        ctx.response.set_cookie(_COOKIE_NAME, cookie.encode('utf-8'), max_age=max_age)
+        raise HttpError.seeother('/')
+    return {'error': u'此用户名或邮箱没有注册'}
 
 
 @interceptor('/')   # 拦截，检验cookie，将是否user或admin挂在request上
@@ -274,7 +276,7 @@ def get_create_blog():
         raise HttpError.seeother('/')
     blogid = ctx.request.query_string.get('blogid')
     if blogid:
-        return {'blog':select_one('select * from blogs where id=?', blogid)}
+        return {'blog': select_one('select * from blogs where id=?', blogid)}
     return dict()
 
 
@@ -296,9 +298,13 @@ def create_blog():
     if  not content:
         raise APIError('content cant be none')
     if i.blogid:
+        #blog = select_one('select * from blogs where id=?', i.blogid)
+        #blog = Blog(user_id=i.blogid, name=name, summary=summary, content=content)
+        #update('update users set name=? summary=? content=? where id=?', name, summary, content, i.blogid)
         blog = select_one('select * from blogs where id=?', i.blogid)
-        blog.update()
-        return translate_time(blog)
+        blog_to_update = Blog(id=blog.id, name=name, summary=summary, content=content)
+        blog_to_update.update()
+        return translate_time(select_one('select * from blogs where id=?', i.blogid))
     blog = Blog(name=name, summary=summary, content=content,user_id=ctx.request.user.id, user_name=ctx.request.user.name )
     blog.insert()
     return translate_time(blog)

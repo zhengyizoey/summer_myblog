@@ -20,7 +20,6 @@
             delimiters: ['${', '}'],
             el:'#vm',
             data:{
-               // b:[],
                 blogs:[],
                 pagenums:1,
                 currentpage:1,
@@ -74,7 +73,7 @@
     <div  class="uk-width-3-4">
         <article  v-for="blog in blogs" class="uk-article">
             <h3 class="uk-article-title"><a :href="'/blog/'+blog.id" >${blog.name}</a></h3>
-            <p class="uk-article-meta" >${blog.created_at}</p>
+            <p class="uk-article-meta" >发表于${blog.created_at}</p>
             <p >${blog.summary}</p>
             <p><a :href="'/blog/'+ blog.id" >继续阅读</a> </p>
         </article>
@@ -84,18 +83,24 @@
         <div class="aboutme">
             <img src="/static/avatar/huanhai.jpg">
             <p>作者：蜘猪</p>
-            <p>联系我：<a href=""><i class="uk-icon-github"></i></a> </p>
+            <p>联系我：<a href="https://github.com/zhengyizoey"><i class="uk-icon-github"></i></a> </p>
         </div>
     </div>
 </div>
     <div class="uk-width-3-4">
         <div class="uk-pagination">`
-            <li class="uk-pagination-previous" ><a href="">上一页</a></li>
+            <li class="uk-pagination-previous" :class="hasprevious?'':'uk-disabled'" >
+                <a v-if="hasprevious" @click="getblog(currentpage-1)" >上一页</a>
+                <span v-else>上一页</span>
+            </li>
             <li v-for="page in pagelist" :class="page===currentpage?'uk-active':''">
                 <span v-if="page===currentpage">${page}</span>
                 <a v-else @click="getblog(page)" >${page}</a>
             </li>
-            <li class="uk-pagination-next"><a @click="getblog(currentpage+1)">下一页</a></li>
+            <li class="uk-pagination-next" :class="hasnext?'':'uk-disabled'">
+                <a v-if="hasnext" @click="getblog(currentpage+1)">下一页</a>
+                <span v-else>下一页</span>
+            </li>
         </div>
     </div>
 </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}每到夏天活一次{% endblock %}</title>
+    <title>{% block title %}念能力修炼{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/uikit.min.css">
     <link rel="stylesheet" href="/static/css/uikit.gradient.min.css">
     <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -26,14 +26,15 @@
 <body>
    <nav class="uk-navbar">
         <ul class="uk-navbar-nav">
-            <a class="uk-navbar-brand" href="/">Run</a>
+            <a class="uk-navbar-brand" href="/">缠</a>
             <li><a href="/">文章列表</a></li>
             <li><a href="/blog/001488179792511be95a4eaad2e4963b13710a51f44fe14000">留言</a></li>
         </ul>
         <div class="uk-navbar-flip">
             <ul class="uk-navbar-nav">
                 {% if ctx.request.user %}
-                <img class="img-avatar" src="/static/avatar/{{ctx.request.user.image}}" >
+                <img class="img-avatar"
+                     src="/static/avatar/{% if ctx.request.user.image %}{{ctx.request.user.image}}{% else %}default.png{% endif %}" >
                 <li><a href="/">{{ctx.request.user.name}}</a></li>
                 <li><a href="/logout">登出</a> </li>
                 {% else %}

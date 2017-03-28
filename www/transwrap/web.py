@@ -1568,7 +1568,6 @@ class WSGIApplication(object):
                     r = []
 
                 start_response(response.status, response.headers)
-                print response.headers
                 return r
             except _RedirectError, e:
                 response.set_header('Location', e.location)
