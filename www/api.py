@@ -9,12 +9,18 @@ def api(func):
             r = json.dumps(func(*args, **kwargs))
         except APIError, e:
             r = json.dumps(dict(error=e.error, data=e.data, message=e.message))
+        # except TypeError:
+        #     func_result = func(*args, **kwargs)
+        #     if isinstance(func_result, list):
+        #         r = json.dumps([object_.as_dict() for object_ in func_result])
+        #     r = json.dumps(func_result.as_dict())
         except Exception, e:
             logging.exception(e)
             r = json.dumps(dict(error='internalerror', data=e.__class__.__name__, message=e.message))
         ctx.response.conten_type = 'application/json'
         return r
     return _wraper
+
 
 class APIError(StandardError):
     def __init__(self, error, data='', message=''):

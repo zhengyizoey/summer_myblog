@@ -1566,7 +1566,6 @@ class WSGIApplication(object):
                     r = r.encode('utf-8')
                 if r is None:
                     r = []
-
                 start_response(response.status, response.headers)
                 return r
             except _RedirectError, e:

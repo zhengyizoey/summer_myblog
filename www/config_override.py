@@ -2,5 +2,8 @@
 configs = {
     'db': {
         'database': 'awesome'
+    },
+    'cookies': {
+        'cookieawesome': 'awesession'
     }
 }

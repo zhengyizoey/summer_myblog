@@ -667,7 +667,7 @@ def interceptor(pattern='/'):
 # 拦截器接受一个next函数，这样，拦截器可以决定调用next（）继续处理请求还是直接返回
 def _build_interceptor_fn(func, next):
     def _wrapper():
-        if func.__interceptor__(ctx.request.path_info):
+        if func.__interceptor__(ctx.request.path_info):  # == _build_pattern_fn(pattern)
             return func(next)
         else:
             return next()
@@ -762,6 +762,7 @@ class WSGIApplication(object):
         self._check_not_running()
         if debug:
             self._get_dynamic.append(StaticFileRoute())   #TODO:wht dynamic add staticroute???
+            # 因为需要根据match的结果，再去判断是否存在文件，而不是把所有可能文件路径都存储在static get 字典
         self._running = True
 
         _application = Dict(document_root=self._document_root)  # _application={'document_root':_document_root}

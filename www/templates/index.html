@@ -11,8 +11,29 @@
             height: 120px;
             border-radius: 5px;
             opacity: 0.9;}
-    .aboutme > p {height: 200%;
+    .aboutme > p  .category>p {height: 200%;
             left: 15px;}
+    ul {
+            list-style-type: none;
+    }
+    .category {
+            position: relative;
+            left: 110px;
+            width: 170px;
+            margin-top: 65px;
+    }
+    .category  li {
+        margin-top: 15px;
+    }
+    .uk-article span {
+        margin-right: 17px;
+    }
+{#    .category > span {#}
+{#        display: block;#}
+{#        margin-top: 15px;#}
+{#        margin-bottom: 15px;#}
+{#        color: #009dd8;#}
+{#    }#}
     </style>
     <script>
     $(function () {
@@ -24,7 +45,9 @@
                 pagenums:1,
                 currentpage:1,
                 hasprevious:false,
-                hasnext:false
+                hasnext:false,
+                currentcat:'',
+                categories:[]
             },
             computed:{
                 pagelist:function () {
@@ -39,17 +62,20 @@
                 this.getblog()
             },
             methods:{
-                getblog:function (page) {
+                getblog:function (page, cat) {
                     //官方传递事件：@click="getblog"  getblog:function(event){alert(event.target.tagname)}原声DOM事件
                     var _page = page||1;
+                    var _cat = cat||'all';
                     var that = this;
-                    $.get('/api/getblog', {'page':_page}, function (data) {
+                    $.get('/api/getblog', {'page':_page, 'cat':_cat}, function (data) {
                         //that.$data = JSON.parse(data); 额，这样也不行，不知为啥，非要一个一个弄。。。
                         that.$data.currentpage = _page;
                         vm.$data.blogs = JSON.parse(data).blogs;
                         that.$data.pagenums = JSON.parse(data).pagenums;
                         that.$data.hasprevious = JSON.parse(data).hasprevious;
                         that.$data.hasnext = JSON.parse(data).hasnext;
+                        that.$data.currentcat = JSON.parse(data).currentcat;
+                        that.$data.categories = JSON.parse(data).categories;
                         //that.$data.b = JSON.parse(data);  //如果：TypeError: this.$data is undefined,vm.b = []
 //                        that.$set(that.b,data); 这个事不行的
 //                        vm.$data = data.data
@@ -65,7 +91,7 @@
         });
         window.vm = vm;
     })
-</script>
+    </script>
 {% endblock %}
 {% block content %}
 <div id="vm">
@@ -73,8 +99,9 @@
     <div  class="uk-width-3-4">
         <article  v-for="blog in blogs" class="uk-article">
             <h3 class="uk-article-title"><a :href="'/blog/'+blog.id" >${blog.name}</a></h3>
-            <p class="uk-article-meta" >发表于${blog.created_at}</p>
-            <p >${blog.summary}</p>
+            <p class="uk-article-meta" ><span><i class="uk-icon-calendar"></i>  发表于${blog.created_at}</span>
+                <span><i class="uk-icon-reorder"></i>   ${blog.cateinfo.name}</span></p>
+            <p>${blog.summary}</p>
             <p><a :href="'/blog/'+ blog.id" >继续阅读</a> </p>
         </article>
         <hr class="uk-article-divider">
@@ -83,22 +110,37 @@
         <div class="aboutme">
             <img src="/static/avatar/huanhai.jpg">
             <p>作者：蜘猪</p>
-            <p>联系我：<a href="https://github.com/zhengyizoey"><i class="uk-icon-github"></i></a> </p>
+            <p>联系我：<a href="https://github.com/zhengyizoey" target="_blank"><i class="uk-icon-github"></i></a> </p>
+        </div>
+        <div class="category">
+            <ul class="uk-list">
+                <h3><i class="uk-icon-reorder"></i> 文章分类</h3>
+                <li v-for="category in categories">
+                    <span v-if="currentcat===category.id">
+                        <i class="uk-icon-arrow-right"></i>
+                        ${category.name}
+                    </span>
+                    <a v-else @click="getblog(1, category.id)">
+                        <i class="uk-icon-arrow-right"></i>
+                        ${category.name}
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
     <div class="uk-width-3-4">
         <div class="uk-pagination">`
             <li class="uk-pagination-previous" :class="hasprevious?'':'uk-disabled'" >
-                <a v-if="hasprevious" @click="getblog(currentpage-1)" >上一页</a>
+                <a v-if="hasprevious" @click="getblog(currentpage-1, currentcat)" >上一页</a>
                 <span v-else>上一页</span>
             </li>
             <li v-for="page in pagelist" :class="page===currentpage?'uk-active':''">
                 <span v-if="page===currentpage">${page}</span>
-                <a v-else @click="getblog(page)" >${page}</a>
+                <a v-else @click="getblog(page, currentcat)" >${page}</a>
             </li>
             <li class="uk-pagination-next" :class="hasnext?'':'uk-disabled'">
-                <a v-if="hasnext" @click="getblog(currentpage+1)">下一页</a>
+                <a v-if="hasnext" @click="getblog(currentpage+1, currentcat)">下一页</a>
                 <span v-else>下一页</span>
             </li>
         </div>

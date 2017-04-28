@@ -9,5 +9,8 @@ configs = {
     },
     'session': {
         'secret': 'AwEsOmE'
+    },
+    'cookies': {
+        'cookieawesome': 'awesession'
     }
 }

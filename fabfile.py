@@ -16,7 +16,7 @@ def build():
     includes = ['static', 'templates', 'transwarp', 'favicon.ico', '*.py']
     excludes = ['test', '.*', '*.pyc', '*.pyo']
     local('rm -f dist/%s' % _TAR_FILE)
-    with lcd(os.path.join(os.path.abspath('.'), 'www')):
+    with lcd(os.path.join(os.path.abspath('.'), 'www')):  # lcd本地命令，将包含不包含文件打包
         cmd = ['tar', '--dereference', '-czvf', '../dist/%s' % _TAR_FILE]
         cmd.extend(['--exclude=\'%s\'' % ex for ex in excludes])
         cmd.extend(includes)

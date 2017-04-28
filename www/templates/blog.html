@@ -3,6 +3,9 @@
 <style>
     .comment-avatar {width: 50px;height: 50px}
     .uk-width-2-3 > h3 {margin-top: 80px;}
+    .commentlist {margin-bottom: 60px;
+                    margin-top:60px}
+    .commentlist  p {color: #a19999}
 </style>
 <script>
     $(function () {
@@ -45,40 +48,49 @@
         <p>{{blog.content|tomarkdown|safe}}</p>
     </article>
 </div>
-<div class="uk-width-2-3">
+<div id="comment" class="uk-width-2-3">
+   <div class="commentlist">
     <h3>评论</h3>
     <hr>
-   <div id="comment">
-    <div id="commentlist">
-        <div v-if="comments.length"  >
+    <div v-if="comments.length"  >
             <article v-for="comment in comments" class="uk-comment">
-            <header class="uk-comment-header">
-                <img class="uk-comment-avatar comment-avatar" :src="comment.user_image?'/static/avatar/'+comment.user_image+'.jpg':'/static/avatar/default.png'"  alt="">
-                <h4 class="uk-comment-title">${comment.user_name}</h4>
-                <div class="uk-comment-meta">发表于：${comment.created_at}</div>
-            </header>
-            <div class="uk-comment-body">${comment.content}</div>
+                <header class="uk-comment-header">
+                    <img class="uk-comment-avatar comment-avatar" :src="comment.user.image?'/static/avatar/'+comment.userinfo.image+'.jpg':'/static/avatar/default.png'"  alt="">
+                    <h4 class="uk-comment-title">${comment.userinfo.name}</h4>
+                    <div class="uk-comment-meta">发表于：${comment.created_at}</div>
+                </header>
+                <div class="uk-comment-body">${comment.content}</div>
+                <hr class="uk-article-divider">
             </article>
-            <hr class="uk-article-divider">
+
         </div>
-        <div v-else>
+       <div v-else>
             <p>还没有评论、</p>
         </div>
-
     </div>
-       <h3>发表评论</h3>
-       <hr>
     {% if ctx.request.user %}
-    <div id="newcomment">
-        <form @submit.prevent="postcomment">
-            评论：<textarea v-model="newcomment" type=""></textarea>
-            <input  type="submit" value="提交">
+    <div class="newcomment">
+        <h3>发表评论</h3>
+        <hr>
+        <form @submit.prevent="postcomment" class="uk-form">
+            <div class="uk-form-row">
+                <label class="uk-form-lable">评论：</label>
+                <div class="uk-form-control">
+                <textarea v-model="newcomment" rows="4" cols="60" placeholder="请输入评论" class="uk-width-1-1"></textarea>
+                </div>
+            </div>
+            <div class="uk-form-row">
+                <button  type="submit" value="提交" class="uk-button uk-button-primary">
+                    <i class="uk-icon-save"></i>提交</button>
+            </div>
         </form>
     </div>
     {% else %}
-    <a class="uk-button-primary" href="/login">登陆后发表评论</a>
+    <a class="uk-button-primary" href="/login">
+        <button class="uk-button uk-button-primary">登陆后发表评论</button>
+    </a>
     {% endif %}
-</div>
+
 </div>
 
 
