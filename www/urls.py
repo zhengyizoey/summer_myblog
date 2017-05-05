@@ -187,7 +187,13 @@ def identify_user(next):
     ctx.request.user = user
     if user:
         ctx.request.manager = True if user.admin else None
-    return next()
+    # return next()
+    try:
+        return next()
+    finally:
+        if session.is_active:
+            print 'close session'
+            session.close()
 
 
 @get('/logout')

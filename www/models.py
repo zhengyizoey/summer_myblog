@@ -6,9 +6,10 @@ from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from transwrap.db import next_id
 import time
 
-engine = create_engine("mysql+pymysql://root:zhengyi@127.0.0.1:3306/awesome?charset=utf8")  # , echo=True
+engine = create_engine("mysql+pymysql://root:zhengyi@127.0.0.1:3306/awesome?charset=utf8", pool_recycle=3600)  # , echo=True ,,
 Base = declarative_base()
-session = sessionmaker(bind=engine)()
+Session = sessionmaker(bind=engine)
+session = Session()
 
 
 def as_dict(self):
@@ -83,7 +84,7 @@ if __name__ == '__main__':
         alter table users rename oldusers;
         alter table comments rename oldcomments;
     2、通过sqlalchem创建新表：
-        Base.metadata.create_all(engine)
+       Base.metadata.create_all(engine)
 
     3、数据库，将老表数据复制到新表
         insert into users
@@ -110,7 +111,7 @@ if __name__ == '__main__':
         4.2
         删除表，重新创建，并将create_engine:charset=utf8 _没用，老表的utf8复制不过来
         show create table blogs;
-        每一列指定：String(30, collation=utf8)指定行有用，表的默认还是latin1
+        model里每一列指定：String(30, collation=utf8)指定行有用，表的默认还是latin1
         show full columns from blogs;
         4.3 我要打人了。。。
         数据库检查，几个默认都是utf8，突然想到。。database，改为utf8 OK
@@ -150,6 +151,7 @@ if __name__ == '__main__':
     #     print as_dict(c)
     #
     # test()
+    server_cat_id = '001493378924079fd75d9d8fa7b4fd5ad497b10fcff9576000'
     cat = session.query(Category).filter(Category.id == '001492903953085457cde531eb24cd1813c78695a41dcfe000').first()
 
 

@@ -4,11 +4,11 @@ from datetime import datetime
 
 from fabric.api import *
 
-env.user = 'ubuntu'
+env.user = 'ubuntu'  # 服务器登陆用户名
 env.key_filename = r'C:\Users\dell\Desktop\zhengyi.pem'
-env.sudo_user = 'root'
+env.sudo_user = 'root'  # sudo用户为root
 env.hosts = ['35.164.12.29']
-db_user = 'root'
+db_user = 'root'  # 服务器数据库用户名
 db_password = 'root'
 
 _TAR_FILE = 'dist-awesome.tar.gz'

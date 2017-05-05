@@ -50,13 +50,15 @@ if __name__ == '__main__':
     # 1、修改数据库不完整关系；
     '''
     1、删除comments里blog_id指向为空的comments：
-        delete * from comments where comments.blog_id not in
+        delete  from comments where comments.blog_id not in
         (select id from blogs);
     2、删除comments里user_id指向为空的：
         delete from comments where comments.user_id not in
         (select id from users);
+        delete from oldcomments where oldcomments.user_id not in
+        (select id from oldusers);
     3、删除blogs里user_id指向为空的：
-        delete from blogs where blogs.user_id not in
-        (select id from users);
+        delete from oldblogs where oldblogs.user_id not in
+        (select id from oldusers);
 
     '''
